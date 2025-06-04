@@ -26,9 +26,13 @@ app.use(cookieParser());
 // ---------- routes -------------------
 
 import userRouter from "./routes/user.routes.js";
+import projectRouter from "./routes/project.routes.js";
+import assignmentRouter from "./routes/assignment.routes.js";
 
 // routes declaration
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/projects", projectRouter);
+app.use("/api/v1/assignments", assignmentRouter);
 
 app.use(errorHandler);
 export { app };

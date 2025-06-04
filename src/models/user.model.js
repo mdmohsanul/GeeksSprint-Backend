@@ -5,33 +5,62 @@ import dotenv from "dotenv";
 dotenv.config();
 
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-  },
-  name: { type: String, required:  [true, "Name is required"], },
-  role: {
-    type: String,
-    enum: ['engineer', 'manager'],
-    required:  [true, "Role is required"],
-  },
-  skills: {
-    type: [String],
-    default: [],
-  },
-  seniority: {
-    type: String,
-    enum: ['junior', 'mid', 'senior'],
-  },
-  maxCapacity: Number,
-  department: String,
-  password: { type: String, required: true }, // hashed password
-   refreshToken: {
       type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [/\S+@\S+\.\S+/, "Email is invalid"],
     },
-}, { timestamps: true })
+    name: {
+      type: String,
+      required: [true, "Name is required"],
+      trim: true,
+      minlength: [2, "Name must be at least 2 characters"],
+      maxlength: [100, "Name must be less than 100 characters"],
+    },
+    role: {
+      type: String,
+      enum: ["engineer", "manager"],
+      required: [true, "Role is required"],
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    seniority: {
+      type: String,
+      enum: ["junior", "mid", "senior"],
+      required: false,
+    },
+    maxCapacity: {
+      type: Number,
+      min: [1, "Capacity must be at least 1%"],
+      max: [100, "Capacity cannot exceed 100%"],
+      default: 100,
+    },
+    department: {
+      type: String,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters"],
+      select: false, // prevents password from being returned by default
+    },
+    refreshToken: {
+      type: String,
+      select: false, // enhances security
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 // pre is hook provided by mongoose which will execute before save
 // this function will execute in two scenarios register or change password
