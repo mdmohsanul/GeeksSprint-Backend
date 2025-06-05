@@ -10,11 +10,11 @@ import { authorizeRoles } from "../middlewares/authorizeRole.js";
 import { get } from "mongoose";
 
 const router = Router();
-
-router.route("/engineers").get(verifyJWT, getAllEngineers);
 router
   .route("/:userId")
   .put(verifyJWT, authorizeRoles("engineer"), updateUserDetails);
+router.route("/engineers").get(verifyJWT, getAllEngineers);
+
 
 
 
