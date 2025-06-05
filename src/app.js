@@ -12,7 +12,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+
 // middleware for json data
 app.use(express.json({ limit: "16kb" }));
 
