@@ -6,7 +6,7 @@ import { errorHandler } from "./utils/errorHandler.js";
 const app = express();
 
 const corsOptions = {
-  origin: "https://geeks-sprint.vercel.app",
+  origin: "*",
   credentials: true, // Allow cookies,
   optionSuccessStatus: 200,
 };
