@@ -10,6 +10,6 @@ import {
 const router = Router();
 
 
-router.route("/engineers").get(verifyJWT, getAllEngineers);
+router.route("/").get(verifyJWT, getAllEngineers);
 
 export default router;
