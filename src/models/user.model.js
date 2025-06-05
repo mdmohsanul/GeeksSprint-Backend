@@ -30,17 +30,24 @@ const userSchema = new mongoose.Schema(
     skills: {
       type: [String],
       default: [],
+      required: function () {
+        return this.role === "engineer"; // Only required for engineers
+      },
     },
     seniority: {
       type: String,
       enum: ["junior", "mid", "senior"],
-      required: false,
+      required: function () {
+        return this.role === "engineer"; // Only required for engineers
+      },
     },
     maxCapacity: {
       type: Number,
       min: [1, "Capacity must be at least 1%"],
       max: [100, "Capacity cannot exceed 100%"],
-      default: 100,
+      required: function () {
+        return this.role === "engineer"; // Only required for engineers
+      },
     },
     department: {
       type: String,

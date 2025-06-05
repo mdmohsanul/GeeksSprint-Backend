@@ -8,34 +8,42 @@ dotenv.config();
 
 
 const getManagerDashboard = asyncHandler(async (req, res) => {
-     // Get all engineers (or filter by manager's department)
-    const engineers = await User.find({ role: 'engineer' });
+  const engineerId = req.user._id;
+  console;
+  // Get engineer info
+  const engineer = await User.findById(engineerId);
+  if (!engineer || engineer.role !== "engineer") {
+    throw new ApiError(403, "Access denied");
+  }
 
-    const assignments = await Assignment.find();
+  // Get active assignments (you may want to filter by status or endDate > now)
+  const activeAssignments = await Assignment.find({ engineerId });
 
-    const data = engineers.map((engineer) => {
-      const engineerAssignments = assignments.filter(
-        (a) => a.engineerId.toString() === engineer._id.toString()
-      );
+  // Calculate total allocated percentage
+  const totalAllocated = activeAssignments.reduce((sum, a) => {
+    const percent = Number(a.allocationPercentage) || 0;
+    return sum + percent;
+  }, 0);
 
-      const totalLoad = engineerAssignments.reduce((sum, a) => sum + a.effort, 0); // e.g., effort is in %
-      const utilization = (totalLoad / engineer.maxCapacity) * 100;
+  const maxCapacity = Number(engineer.maxCapacity) || 100;
+  const availableCapacity = maxCapacity - totalAllocated;
+  const utilization = (totalAllocated / maxCapacity) * 100;
 
-      return {
-        id: engineer._id,
-        name: engineer.name,
-        skills: engineer.skills,
-        department: engineer.department,
-        maxCapacity: engineer.maxCapacity,
-        currentLoad: totalLoad,
-        utilization: utilization.toFixed(1),
-        status:
-          utilization >= 100
-            ? 'Overloaded'
-            : utilization < 50
-            ? 'Underutilized'
-            : 'Optimal',
-      };
-    });
-    res.status(200).json(new ApiResponse(200,data,"Engineers Data Fetched Successfully"))
+  const response = {
+    id: engineer._id,
+    name: engineer.name,
+    department: engineer.department,
+    skills: engineer.skills,
+    maxCapacity,
+    currentLoad: totalAllocated,
+    availableCapacity,
+    utilization: utilization.toFixed(1) + "%",
+    activeAssignments, // optional: to show assignment list
+  };
+  console.log("Manager Dashboard Response:", response);
+  res
+    .status(200)
+    .json(new ApiResponse(200, response, "Engineer dashboard loaded"));
 });
+
+export { getManagerDashboard };

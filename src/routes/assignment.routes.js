@@ -1,16 +1,19 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/authorizeRole.js";
-import  {createAssignment,
+import {
+  createAssignment,
   getAssignments,
   updateAssignment,
-  deleteAssignment} from "../controllers/assignment.controller.js";
+  deleteAssignment,
+  getAssignmentById,
+} from "../controllers/assignment.controller.js";
 
 const router = Router();
 
+router.route("/").get(verifyJWT, getAssignments);
 
-router.route("/").get(
-  verifyJWT,getAssignments)
+router.route("/engineer/:id").get(verifyJWT, getAssignmentById);
 
 router.route("/").post(
   verifyJWT,authorizeRoles('manager'),createAssignment)

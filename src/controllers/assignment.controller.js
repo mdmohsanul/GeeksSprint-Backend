@@ -17,6 +17,22 @@ const getAssignments = asyncHandler(async (_, res) => {
     "Assignments fetched successfully"
   ));
 });
+const getAssignmentById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const assignment = await Assignment.findById(id)
+    .populate("engineerId", "name email role")
+    .populate("projectId", "name status");
+
+  if (!assignment) {
+    res.status(404);
+    throw new Error("Assignment not found");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, assignment, "Assignment fetched successfully"));
+});
 
 // @desc    Create a new assignment
 // @route   POST /api/assignments
@@ -31,8 +47,14 @@ const createAssignment = asyncHandler(async (req, res) => {
     role,
   } = req.body;
 
-  if (!engineerId || !projectId || !allocationPercentage || !startDate || !role) {
-    throw new ApiError(400,'Missing required fields');
+  if (
+    !engineerId ||
+    !projectId ||
+    !allocationPercentage ||
+    !startDate ||
+    !role
+  ) {
+    throw new ApiError(400, "Missing required fields");
   }
 
   const newAssignment = await Assignment.create({
@@ -44,7 +66,11 @@ const createAssignment = asyncHandler(async (req, res) => {
     role,
   });
 
-  res.status(201).json(new ApiResponse(200,newAssignment,"Assignment created successfully") );
+  res
+    .status(201)
+    .json(
+      new ApiResponse(200, newAssignment, "Assignment created successfully")
+    );
 });
 
 // @desc    Update an assignment
@@ -52,22 +78,20 @@ const createAssignment = asyncHandler(async (req, res) => {
 // @access  Private/Admin/Manager
 const updateAssignment = asyncHandler(async (req, res) => {
   const assignment = await Assignment.findById(req.params.id);
- 
+
   if (!assignment) {
-    throw new ApiError(404,'Assignment not found');
+    throw new ApiError(404, "Assignment not found");
   }
 
   const updated = await Assignment.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
-     context: 'query'
+    context: "query",
   });
 
-  res.status(200).json(new ApiResponse(
-    200,
-    updated,
-    "Assignment updated successfully"
-  ));
+  res
+    .status(200)
+    .json(new ApiResponse(200, updated, "Assignment updated successfully"));
 });
 
 // @desc    Delete an assignment
@@ -77,20 +101,20 @@ const deleteAssignment = asyncHandler(async (req, res) => {
   const assignment = await Assignment.findById(req.params.id);
 
   if (!assignment) {
-    throw new ApiError(404,'Assignment not found');
+    throw new ApiError(404, "Assignment not found");
   }
-   const deletedAssignment = assignment.toObject();
-   await Assignment.deleteOne({ _id: req.params.id });
- 
-  res.status(200).json(new ApiResponse(
-    200,
-    deletedAssignment,
- 'Assignment removed'
-  ));
+  const deletedAssignment = assignment.toObject();
+  await Assignment.deleteOne({ _id: req.params.id });
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, deletedAssignment, "Assignment removed"));
 });
 
-export {createAssignment,
+export {
+  createAssignment,
   getAssignments,
   updateAssignment,
-  deleteAssignment
-}
+  deleteAssignment,
+  getAssignmentById,
+};
