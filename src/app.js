@@ -29,11 +29,13 @@ import userRouter from "./routes/user.routes.js";
 import projectRouter from "./routes/project.routes.js";
 import assignmentRouter from "./routes/assignment.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import engineerRouter from "./routes/engineer.routes.js";
 
 // routes declaration
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/projects", projectRouter);
+app.use("/api/v1/engineers", engineerRouter);
 app.use("/api/v1/assignments", assignmentRouter);
 
 
